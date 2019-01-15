@@ -74,18 +74,18 @@ class CReaderWriterLock;
 class CReaderWriterLockNonReentrance
 {
 public:
-	CReaderWriterLockNonReentrance() throw();
-	~CReaderWriterLockNonReentrance() throw();
-	bool AcquireReaderLock(DWORD dwTimeout = INFINITE) throw();
-	void ReleaseReaderLock() throw();
-	bool AcquireWriterLock(DWORD dwTimeout = INFINITE) throw();
-	void ReleaseWriterLock() throw();
-	void DowngradeFromWriterLock() throw();
+	CReaderWriterLockNonReentrance();
+	~CReaderWriterLockNonReentrance();
+	bool AcquireReaderLock(DWORD dwTimeout = INFINITE);
+	void ReleaseReaderLock();
+	bool AcquireWriterLock(DWORD dwTimeout = INFINITE);
+	void ReleaseWriterLock();
+	void DowngradeFromWriterLock();
 
 	// When a thread calls UpgradeToWriterLock, the reader lock is released,
 	// and the thread goes to the end of the writer queue. Thus, other threads
 	// might write to resources before this method returns
-	bool UpgradeToWriterLock(DWORD dwTimeout = INFINITE) throw();
+	bool UpgradeToWriterLock(DWORD dwTimeout = INFINITE);
 protected:
 	// A critical section to guard all the other members
 	mutable CRITICAL_SECTION m_cs;
@@ -100,13 +100,13 @@ protected:
 	// Total number of readers are waiting to be owners of this object
 	volatile INT m_iNumOfReaderWaiting;
 	// Internal/Real implementation
-	void EnterCS() const throw();
-	void LeaveCS() const throw();
-	bool _ReaderWait(DWORD dwTimeout) throw();
-	bool _WriterWaitAndLeaveCSIfSuccess(DWORD dwTimeout) throw();
-	bool _UpgradeToWriterLockAndLeaveCS(DWORD dwTimeout) throw();
-	void _ReaderRelease() throw();
-	void _WriterRelease(bool blDowngrade) throw();
+	void EnterCS() const;
+	void LeaveCS() const;
+	bool _ReaderWait(DWORD dwTimeout);
+	bool _WriterWaitAndLeaveCSIfSuccess(DWORD dwTimeout);
+	bool _UpgradeToWriterLockAndLeaveCS(DWORD dwTimeout);
+	void _ReaderRelease();
+	void _WriterRelease(bool blDowngrade);
 
 	friend CReaderWriterLock;
 };
@@ -120,26 +120,26 @@ public:
 	CReaderWriterLock();
 	~CReaderWriterLock();
 
-	bool AcquireReaderLock(DWORD dwTimeout = INFINITE) throw();
-	void ReleaseReaderLock() throw();
+	bool AcquireReaderLock(DWORD dwTimeout = INFINITE);
+	void ReleaseReaderLock();
 
 	// If current thread was already a reader
 	// it will be upgraded to be writer automatically.
 	// BE CAREFUL! Other threads might write to the resource
 	// before current thread is successfully upgraded.
-	bool AcquireWriterLock(DWORD dwTimeout = INFINITE) throw();
-	void ReleaseWriterLock() throw();
+	bool AcquireWriterLock(DWORD dwTimeout = INFINITE);
+	void ReleaseWriterLock();
 
 	// Regardless of how many times current thread acquired reader
 	// or writer locks, a call to this method will release all locks.
 	// After that, any call to ReleaseWriterLock or ReleaseReaderLock
 	// will raise exception in DEBUG mode.
-	void ReleaseAllLocks() throw();
+	void ReleaseAllLocks();
 
 	// Query thread's status
-	DWORD GetCurrentThreadStatus() const throw();
+	DWORD GetCurrentThreadStatus() const;
 	void GetCurrentThreadStatus(DWORD* lpdwReaderLockCounter,
-		DWORD* lpdwWriterLockCounter) const throw();
+		DWORD* lpdwWriterLockCounter) const;
 protected:
 	CReaderWriterLockNonReentrance m_impl;
 
@@ -225,7 +225,7 @@ public :
 	{
 		isAcquired = m_lock.AcquireWriterLock(timeout);
 	}
-	~CAutoWriteWeakLockT() throw()
+	~CAutoWriteWeakLockT()
 	{
 		release();
 	}
@@ -266,11 +266,11 @@ typedef CAutoWriteWeakLockT<CReaderWriterLock> CAutoWriteWeakLock;
 // Inline methods
 
 __forceinline
-	void CReaderWriterLockNonReentrance::EnterCS() const throw() {
+	void CReaderWriterLockNonReentrance::EnterCS() const {
 		::EnterCriticalSection(&m_cs);
 }
 
 __forceinline
-	void CReaderWriterLockNonReentrance::LeaveCS() const throw(){
+	void CReaderWriterLockNonReentrance::LeaveCS() const {
 		::LeaveCriticalSection(&m_cs);
 }
